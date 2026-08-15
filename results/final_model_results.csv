@@ -1,0 +1,5 @@
+Model,Accuracy,Precision,Recall,F1 Score,ROC-AUC
+Logistic Regression,0.998995983935743,0.9989985129434615,0.998995983935743,0.9989961982960297,0.9999926346801347
+Naive Bayes,1.0,1.0,1.0,1.0,1.0
+Random Forest,1.0,1.0,1.0,1.0,1.0
+Neural Network,1.0,1.0,1.0,1.0,1.0

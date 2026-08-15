@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AI Phishing Email Detector</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+
+            <h1>🛡️ AI Phishing Email Detector</h1>
+
+            <p>
+                AI-Driven Phishing Email Detection Using NLP
+            </p>
+
+        </header>
+
+
+        <main>
+
+            <section class="card">
+
+                <h2>Analyze an Email</h2>
+
+                <textarea
+                    id="emailInput"
+                    placeholder="Paste the email content here..."
+                ></textarea>
+
+
+                <button onclick="analyzeEmail()">
+                    🔍 Analyze Email
+                </button>
+
+
+                <div id="loading"
+                     class="loading hidden">
+
+                    Analyzing email...
+
+                </div>
+
+
+                <div id="result"
+                     class="result hidden">
+
+                    <h2 id="resultLabel"></h2>
+
+                    <p>
+                        Confidence:
+                        <strong id="confidence"></strong>
+                    </p>
+
+
+                    <div class="features">
+
+                        <h3>Email Analysis</h3>
+
+                        <p>
+                            Email Length:
+                            <span id="emailLength"></span>
+                        </p>
+
+                        <p>
+                            URLs:
+                            <span id="urlCount"></span>
+                        </p>
+
+                        <p>
+                            Digits:
+                            <span id="digitCount"></span>
+                        </p>
+
+                        <p>
+                            Special Characters:
+                            <span id="specialCount"></span>
+                        </p>
+
+                        <p>
+                            Exclamation Marks:
+                            <span id="exclamationCount"></span>
+                        </p>
+
+                        <p>
+                            Suspicious Words:
+                            <span id="suspiciousWords"></span>
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+
+        <footer>
+
+            <p>
+                AI-Driven Phishing Email Detection Using NLP
+            </p>
+
+        </footer>
+
+    </div>
+
+
+<script>
+
+async function analyzeEmail() {
+
+    const email =
+        document.getElementById("emailInput").value;
+
+
+    if (!email.trim()) {
+
+        alert("Please enter an email.");
+
+        return;
+
+    }
+
+
+    document
+        .getElementById("loading")
+        .classList
+        .remove("hidden");
+
+
+    document
+        .getElementById("result")
+        .classList
+        .add("hidden");
+
+
+    try {
+
+        const response = await fetch(
+            "/predict",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    email: email
+                })
+            }
+        );
+
+
+        const data = await response.json();
+
+
+        if (data.error) {
+
+            alert(data.error);
+
+            return;
+
+        }
+
+
+        document
+            .getElementById("resultLabel")
+            .textContent = data.label;
+
+
+        document
+            .getElementById("confidence")
+            .textContent =
+                data.confidence + "%";
+
+
+        document
+            .getElementById("emailLength")
+            .textContent =
+                data.metadata.email_length;
+
+
+        document
+            .getElementById("urlCount")
+            .textContent =
+                data.metadata.url_count;
+
+
+        document
+            .getElementById("digitCount")
+            .textContent =
+                data.metadata.digit_count;
+
+
+        document
+            .getElementById("specialCount")
+            .textContent =
+                data.metadata.special_char_count;
+
+
+        document
+            .getElementById("exclamationCount")
+            .textContent =
+                data.metadata.exclamation_count;
+
+
+        document
+            .getElementById("suspiciousWords")
+            .textContent =
+                data.metadata.suspicious_word_count;
+
+
+        const resultBox =
+            document.getElementById("result");
+
+
+        resultBox.classList.remove(
+            "hidden"
+        );
+
+
+        resultBox.classList.remove(
+            "phishing",
+            "legitimate"
+        );
+
+
+        if (data.label === "PHISHING") {
+
+            resultBox.classList.add(
+                "phishing"
+            );
+
+        } else {
+
+            resultBox.classList.add(
+                "legitimate"
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "An error occurred while analyzing the email."
+        );
+
+    }
+
+    finally {
+
+        document
+            .getElementById("loading")
+            .classList
+            .add("hidden");
+
+    }
+
+}
+
+</script>
+
+</body>
+
+</html>
